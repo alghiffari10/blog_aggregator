@@ -14,11 +14,13 @@ type Config struct {
 }
 
 func (cfg *Config) SetUser(userName string) error {
+
 	cfg.CurrentUserName = userName
 	return write(*cfg)
 }
 
 func Read() (Config, error) {
+
 	fullPath, err := getConfigFilePath()
 	if err != nil {
 		return Config{}, err
@@ -41,15 +43,18 @@ func Read() (Config, error) {
 }
 
 func getConfigFilePath() (string, error) {
+
 	home, err := os.UserHomeDir()
 	if err != nil {
 		return "", err
 	}
+
 	fullPath := filepath.Join(home, configFileName)
 	return fullPath, nil
 }
 
 func write(cfg Config) error {
+
 	fullPath, err := getConfigFilePath()
 	if err != nil {
 		return err
