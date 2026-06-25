@@ -15,6 +15,17 @@ go install github.com/alghiffari10/blog_aggregator@latest
 
 This compiles a static binary to `$GOPATH/bin`. Make sure that directory is on your `$PATH`.
 
+## Check if Installation successful by write version command 
+```
+blog_aggregator version
+```
+```
+```
+```
+```
+```
+
+
 ## Quick Start
 
 ### 1. Create the database
