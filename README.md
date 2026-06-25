@@ -62,20 +62,20 @@ Create `~/.gatorconfig.json`:
 
 ```bash
 # Register a user
-gator register alice
+blog_aggregator register alice
 
 # Add a feed (you automatically follow it)
-gator addfeed HackerNews https://news.ycombinator.com/rss
+blog_aggregator addfeed HackerNews https://news.ycombinator.com/rss
 
 # Start the aggregator in a separate terminal
-gator agg 60s
+blog_aggregator agg 60s
 
 # Follow another feed
-gator follow https://blog.golang.org/feed.atom
+blog_aggregator follow https://blog.golang.org/feed.atom
 
 # See what you follow
-gator following
+blog_aggregator following
 
 # Browse the latest posts
-gator browse 5
+blog_aggregator browse 5
 ```
