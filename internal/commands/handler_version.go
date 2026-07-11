@@ -1,11 +1,11 @@
-package main
+package commands
 
 import (
 	"fmt"
 	"runtime/debug"
 )
 
-func handlerVersion(s *state, cmd command) error {
+func HandlerVersion(s *State, cmd Command) error {
 
 	info, ok := debug.ReadBuildInfo()
 	if !ok {

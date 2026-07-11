@@ -1,4 +1,4 @@
-package main
+package commands
 
 import (
 	"context"
@@ -12,7 +12,7 @@ import (
 	"github.com/google/uuid"
 )
 
-func handlerAggregator(s *state, cmd command) error {
+func HandlerAggregator(s *State, cmd Command) error {
 	duration, err := time.ParseDuration(cmd.Args[0])
 	if err != nil {
 		return err
@@ -29,7 +29,7 @@ func handlerAggregator(s *state, cmd command) error {
 	}
 }
 
-func handlerAddFeed(s *state, cmd command, user database.User) error {
+func HandlerAddFeed(s *State, cmd Command, user database.User) error {
 
 	if len(cmd.Args) != 2 {
 		return fmt.Errorf("usage: addfeed <name> <url>")
@@ -38,7 +38,7 @@ func handlerAddFeed(s *state, cmd command, user database.User) error {
 	name := cmd.Args[0]
 	url := cmd.Args[1]
 
-	feed, err := s.db.CreateFeed(context.Background(), database.CreateFeedParams{
+	feed, err := s.Db.CreateFeed(context.Background(), database.CreateFeedParams{
 		ID:        uuid.New(),
 		CreatedAt: time.Now(),
 		UpdatedAt: time.Now(),
@@ -50,7 +50,7 @@ func handlerAddFeed(s *state, cmd command, user database.User) error {
 		return err
 	}
 
-	feedFollow, err := s.db.CreateFeedFollow(
+	feedFollow, err := s.Db.CreateFeedFollow(
 		context.Background(),
 		database.CreateFeedFollowParams{
 			ID:        uuid.New(),
@@ -74,9 +74,9 @@ func handlerAddFeed(s *state, cmd command, user database.User) error {
 	return nil
 }
 
-func handlerFeeds(s *state, cmd command) error {
+func HandlerFeeds(s *State, cmd Command) error {
 
-	feeds, err := s.db.GetFeeds(context.Background())
+	feeds, err := s.Db.GetFeeds(context.Background())
 	if err != nil {
 		return err
 	}
@@ -96,18 +96,18 @@ func handlerFeeds(s *state, cmd command) error {
 	return nil
 }
 
-func handlerFollows(s *state, cmd command, user database.User) error {
+func HandlerFollows(s *State, cmd Command, user database.User) error {
 
 	if len(cmd.Args) != 1 {
 		return fmt.Errorf("usage: follow <url> ")
 	}
 
-	feed, err := s.db.GetFeedByUrl(context.Background(), cmd.Args[0])
+	feed, err := s.Db.GetFeedByUrl(context.Background(), cmd.Args[0])
 	if err != nil {
 		return err
 	}
 
-	follow, err := s.db.CreateFeedFollow(
+	follow, err := s.Db.CreateFeedFollow(
 		context.Background(),
 		database.CreateFeedFollowParams{
 			ID:        uuid.New(),
@@ -124,9 +124,9 @@ func handlerFollows(s *state, cmd command, user database.User) error {
 	return nil
 }
 
-func handlerFollowing(s *state, cmd command, user database.User) error {
+func HandlerFollowing(s *State, cmd Command, user database.User) error {
 
-	follows, err := s.db.GetFeedFollowsForUser(context.Background(), user.ID)
+	follows, err := s.Db.GetFeedFollowsForUser(context.Background(), user.ID)
 	if err != nil {
 		return err
 	}
@@ -137,18 +137,18 @@ func handlerFollowing(s *state, cmd command, user database.User) error {
 	return nil
 }
 
-func handlerUnfollow(s *state, cmd command, user database.User) error {
+func HandlerUnfollow(s *State, cmd Command, user database.User) error {
 
 	if len(cmd.Args) != 1 {
 		return fmt.Errorf("usage: <unfollow> <url>")
 	}
 
-	feed, err := s.db.GetFeedByUrl(context.Background(), cmd.Args[0])
+	feed, err := s.Db.GetFeedByUrl(context.Background(), cmd.Args[0])
 	if err != nil {
 		return err
 	}
 
-	err = s.db.DeleteFeedFollow(context.Background(),
+	err = s.Db.DeleteFeedFollow(context.Background(),
 		database.DeleteFeedFollowParams{
 			UserID: user.ID,
 			FeedID: feed.ID,
@@ -162,14 +162,14 @@ func handlerUnfollow(s *state, cmd command, user database.User) error {
 	return nil
 }
 
-func scrapeFeeds(s *state) error {
+func scrapeFeeds(s *State) error {
 
-	feed, err := s.db.GetNextFeedToFetch(context.Background())
+	feed, err := s.Db.GetNextFeedToFetch(context.Background())
 	if err != nil {
 		return err
 	}
 
-	err = s.db.MarkFeedFetched(context.Background(), feed.ID)
+	err = s.Db.MarkFeedFetched(context.Background(), feed.ID)
 	if err != nil {
 		return err
 	}
@@ -189,7 +189,7 @@ func scrapeFeeds(s *state) error {
 				Valid: true,
 			}
 		}
-		_, err = s.db.CreatePost(context.Background(), database.CreatePostParams{
+		_, err = s.Db.CreatePost(context.Background(), database.CreatePostParams{
 			ID:        uuid.New(),
 			CreatedAt: time.Now().UTC(),
 			UpdatedAt: time.Now().UTC(),

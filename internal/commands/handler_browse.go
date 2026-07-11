@@ -1,4 +1,4 @@
-package main
+package commands
 
 import (
 	"context"
@@ -8,7 +8,7 @@ import (
 	"github.com/alghiffari10/blog_aggregator/internal/database"
 )
 
-func handlerBrowse(s *state, cmd command, user database.User) error {
+func HandlerBrowse(s *State, cmd Command, user database.User) error {
 	limit := 2
 	if len(cmd.Args) == 1 {
 		if specifiedLimit, err := strconv.Atoi(cmd.Args[0]); err == nil {
@@ -18,7 +18,7 @@ func handlerBrowse(s *state, cmd command, user database.User) error {
 		}
 	}
 
-	posts, err := s.db.GetPostsForUser(context.Background(), database.GetPostsForUserParams{
+	posts, err := s.Db.GetPostsForUser(context.Background(), database.GetPostsForUserParams{
 		UserID: user.ID,
 		Limit:  int32(limit),
 	})

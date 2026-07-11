@@ -5,15 +5,11 @@ import (
 	"log"
 	"os"
 
+	"github.com/alghiffari10/blog_aggregator/internal/commands"
 	"github.com/alghiffari10/blog_aggregator/internal/config"
 	"github.com/alghiffari10/blog_aggregator/internal/database"
 	_ "github.com/lib/pq"
 )
-
-type state struct {
-	db  *database.Queries
-	cfg *config.Config
-}
 
 func main() {
 
@@ -30,28 +26,28 @@ func main() {
 	defer db.Close()
 	dbQueries := database.New(db)
 
-	programState := &state{
-		db:  dbQueries,
-		cfg: &cfg,
+	programState := &commands.State{
+		Db:  dbQueries,
+		Cfg: &cfg,
 	}
 
-	cmds := commands{
-		registeredCommands: make(map[string]func(*state, command) error),
+	cmds := commands.Commands{
+		RegisteredCommands: make(map[string]func(*commands.State, commands.Command) error),
 	}
 
 	// Register the commands
-	cmds.register("login", handlerLogin)
-	cmds.register("register", handlerRegister)
-	cmds.register("reset", handlerReset)
-	cmds.register("users", handlerUsers)
-	cmds.register("agg", handlerAggregator)
-	cmds.register("feeds", handlerFeeds)
-	cmds.register("addfeed", middlewareLoggedIn(handlerAddFeed))
-	cmds.register("follow", middlewareLoggedIn(handlerFollows))
-	cmds.register("following", middlewareLoggedIn(handlerFollowing))
-	cmds.register("unfollow", middlewareLoggedIn(handlerUnfollow))
-	cmds.register("browse", middlewareLoggedIn(handlerBrowse))
-	cmds.register("version", handlerVersion)
+	cmds.Register("login", commands.HandlerLogin)
+	cmds.Register("register", commands.HandlerRegister)
+	cmds.Register("reset", commands.HandlerReset)
+	cmds.Register("users", commands.HandlerUsers)
+	cmds.Register("agg", commands.HandlerAggregator)
+	cmds.Register("feeds", commands.HandlerFeeds)
+	cmds.Register("addfeed", commands.MiddlewareLoggedIn(commands.HandlerAddFeed))
+	cmds.Register("follow", commands.MiddlewareLoggedIn(commands.HandlerFollows))
+	cmds.Register("following", commands.MiddlewareLoggedIn(commands.HandlerFollowing))
+	cmds.Register("unfollow", commands.MiddlewareLoggedIn(commands.HandlerUnfollow))
+	cmds.Register("browse", commands.MiddlewareLoggedIn(commands.HandlerBrowse))
+	cmds.Register("version", commands.HandlerVersion)
 
 	if len(os.Args) < 2 {
 		log.Fatal("Usage: cli <command> [args...]")
@@ -60,7 +56,7 @@ func main() {
 	cmdName := os.Args[1]
 	cmdArgs := os.Args[2:]
 
-	err = cmds.run(programState, command{Name: cmdName, Args: cmdArgs})
+	err = cmds.Run(programState, commands.Command{Name: cmdName, Args: cmdArgs})
 	if err != nil {
 		log.Fatal(err)
 	}
